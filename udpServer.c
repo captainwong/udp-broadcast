@@ -19,10 +19,16 @@
 
 int main(int argc, char *argv[]) {
   
-  int sd, rc, n, cliLen;
+  int sd, rc, n, cliLen, port;
   struct sockaddr_in cliAddr, servAddr;
   char msg[MAX_MSG];
   int broadcast = 1;
+
+  if(argc == 2){
+      port = atoi(argv[1]);
+  }else{
+      port = LOCAL_SERVER_PORT;
+  }
   
   /* socket creation */
   sd=socket(AF_INET, SOCK_DGRAM, 0);
@@ -39,16 +45,16 @@ int main(int argc, char *argv[]) {
   /* bind local server port */
   servAddr.sin_family = AF_INET;
   servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  servAddr.sin_port = htons(LOCAL_SERVER_PORT);
+  servAddr.sin_port = htons(port);
   rc = bind (sd, (struct sockaddr *) &servAddr,sizeof(servAddr));
   if(rc<0) {
     printf("%s: cannot bind port number %d \n", 
-	   argv[0], LOCAL_SERVER_PORT);
+	   argv[0], port);
     exit(1);
   }
 
   printf("%s: waiting for data on port UDP %u\n", 
-	   argv[0],LOCAL_SERVER_PORT);
+	   argv[0], port);
 
   /* server infinite loop */
   while(1) {
